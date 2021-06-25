@@ -1,7 +1,8 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, HttpResponse
 from django.views import View
 from .models import Video, VideoTag, Tag
 from .forms import UploadForm
+from hypertube import settings
 
 
 # Create your views here.
@@ -23,6 +24,7 @@ class Index(View):
         context = {
             'tag': tag,
             'videos': videos,
+            'user': request.user
         }
         return render(request, 'tube/index.html', context)
 
@@ -56,3 +58,20 @@ class Upload(View):
                 video_tag.video = video_model
                 video_tag.save()
         return redirect('/tube/')
+
+
+class Viewer(View):
+
+    def get(self, request, video_id):
+        video = Video.objects.get(id=video_id)
+        video_tags = VideoTag.objects.filter(video=video)
+        tags = set([video.tag for video in video_tags])
+        context = {'video': video, 'tags': tags}
+        return render(request, 'tube/view.html', context=context)
+
+
+class FileViewer(View):
+
+    def get(self, request, file_name):
+        with open(settings.MEDIA_ROOT + file_name, 'rb') as vid:
+            return HttpResponse(content=vid, content_type='video/mp4')

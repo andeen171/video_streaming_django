@@ -1,8 +1,9 @@
 from django.urls import path
-from .views import Index, Upload, Viewer
+from .views import Index, Upload, Viewer, FileViewer
 
 urlpatterns = [
     path('', Index.as_view(), name='index'),
+    path('watch/<int:video_id>/', Viewer.as_view(), name='viewer'),
     path('upload/', Upload.as_view(), name='upload'),
-    path('<file_name>/', Viewer.as_view(), name='view'),
+    path('file/<file_name>/', FileViewer.as_view(), name='view'),
 ]
