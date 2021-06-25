@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Signup</title>
+</head>
+<body>
+
+    <form method="post" action="/signup/">{% csrf_token %}
+        <table aria-label="form">
+            {{ form.as_table }}</table>
+        <button type="submit">Login</button>
+    </form>
+
+</body>
+</html>

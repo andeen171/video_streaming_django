@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Upload</title>
+</head>
+<body>
+    <a href="/tube/"><h2>Hypertube</h2></a>
+    {% if user.is_authenticated %}
+        <p>Hello, {{ user }}</p>
+        <p><a href="/logout/">logout</a></p>
+
+        <form enctype="multipart/form-data" method="post" action="">{% csrf_token %}
+            <table>{{ form.as_table}}</table>
+            <button type="submit">upload</button>
+        </form>
+    {% else %}
+        <p>
+            You are not logged in. Please log in or
+            sign up if you have no account.
+        </p>
+        <a href="/login/">Login</a>
+        <a href="/signup/">Sign Up</a>
+    {% endif %}
+</body>
+</html>

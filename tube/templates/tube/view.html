@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ video.title }}</title>
+</head>
+<body>
+    <a href="/tube/"><h2>Hypertube</h2></a>
+    {% if user.is_authenticated %}
+        <p>Hello, {{ user }}</p>
+        <p><a href="/logout/">logout</a></p>
+    {% else %}
+        <a href="/login/">Login</a>
+        <a href="/signup/">Sign Up</a>
+    {% endif %}
+    <video width="640" height="480" controls>
+        <source src="/tube/{{ video.file.name }}" type="video/mp4">
+    </video>
+    <p>{{ video.title }}</p>
+    {% for tag in tags %}
+        <a target="_blank" href="/tube/?tag=sport">#sport</a>
+</body>
+</html>
