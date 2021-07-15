@@ -6,31 +6,52 @@
         <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
         <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
         <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.10/css/all.css" integrity="sha384-+d0P83n9kaQMCwj8F4RJB66tzIwOKmrdb46+porD/OvrJ+37WqIM7UoBtwHO6Nlg" crossorigin="anonymous">
         <title>Hypertube - Main</title>
+        <style>
+        *{
+            text-decoration: none !important;
+        }
+    </style>
     </head>
     <body>
 
-        <h2>Hypertube</h2>
-        {% if user.is_authenticated %}
-            <p>Hello, {{ user }} - <a href="/logout/">logout</a></p>
-        {% else %}
-            <a href="/login/">Login</a>
-            <a href="/signup/">Sign Up</a>
-        {% endif %}
+        <nav class="navbar navbar-light bg-light">
 
-        <form class="form-inline my-2 my-lg-0" action="{% url 'index' %}">
-            <input type="search" aria-label="Search" name="q">
-            <button class="btn btn-primary btn-sm my-2 my-sm-0" type="submit">Search</button>
-        </form>
+            <div class="navbar-brand">
+                <a href="/tube/">
+                    <h2>Hypertube</h2>
+                </a>
 
-        {% if tag %}
-            <a href="tube/?tag={{ tag }}">#{{ tag }}</a>
-        {% endif %}
+            </div>
+            <span class="navbar-text">
+                {% if user.is_authenticated %}
+                    Hello, {{ user }} - <a href="{% url 'logout' %}">logout</a>
+                {% else %}
+                    <a href="{% url 'login' %}">Login</a>
+                    <a href="{% url 'signup' %}">Sign Up</a>
+                {% endif %}
+            </span>
 
-        <p>{{ videos|length }} videos - <a href="/tube/upload/">Upload video</a></p>
+            <span class="navbar-text">
+                {% if tag %}
+                    <a href="/tube/?tag={{ tag }}">#{{ tag }}</a>
+                {% endif %}
+            </span>
+            <span class="navbar-text">
+                {{ videos|length }} videos - <a href="{% url 'upload' %}">Upload video</a>
+            </span>
 
-        <div class="space-medium">
+            <form class="form-inline my-2 my-lg-0" action="{% url 'index' %}">
+
+                <input class="form-control mr-sm-2" type="search" aria-label="Search" name="q">
+                <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+
+            </form>
+
+        </nav>
+
+
+        <div class="mt-4">
             <div class="container">
                 <div class="row">
                     {% for video in videos %}
@@ -38,13 +59,13 @@
                         <div class="video-testimonial-block">
                             <div class="video-thumbnail">
                                 <a href="/tube/watch/{{ video.id }}/">
-                                        <img src="https://easetemplate.com/free-website-templates/finvisor/images/testi_img_1.jpg" alt="" class="img-fluid">
+                                    <img src="/tube/thumb/thumb{{ video.file.name }}/" alt="" class="img-fluid" >
                                 </a>
                             </div>
                         </div>
                         <div class="video-testimonial-content">
                             <h4 class="mb10">{{ video.title }}</h4>
-                            <p>User Name</p>
+                            <p>{{ video.author }}</p>
                         </div>
                     </div>
                     {% endfor %}
@@ -52,6 +73,8 @@
             </div>
         </div>
 
+         <script src="https://code.jquery.com/jquery-1.12.0.min.js"></script>
+         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-p34f1UUtsS3wqzfto5wAAmdvj+osOnFyQFpp4Ua3gs/ZVWx6oOypYoCJhGGScy+8" crossorigin="anonymous"></script>
   </body>
 </html>

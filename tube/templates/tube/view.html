@@ -1,31 +1,62 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <!-- Required meta tags -->
+
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-    <!-- Bootstrap CSS -->
+        <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+        <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-wEmeIV1mKuiNpC+IOBjI7aAzPcEZeedi5yW5f2yOq55WWLwNGmvvx4Um1vskeMj0" crossorigin="anonymous">
     <meta charset="UTF-8">
     <title>{{ video.title }}</title>
+    <style>
+        *{
+            text-decoration: none !important;
+        }
+    </style>
 </head>
 <body>
-    <a href="/tube/"><h2>Hypertube</h2></a>
-    {% if user.is_authenticated %}
-        <p>Hello, {{ user }} - <a href="/logout/">logout</a></p>
-    {% else %}
-        <a href="/login/">Login</a>
-        <a href="/signup/">Sign Up</a>
-    {% endif %}
-    <video width="640" height="400" controls>
-        <source src="/tube/file/{{ video.file.name }}" type="video/mp4">
-    </video>
-    <p>{{ video.title }}</p>
+    <nav class="navbar navbar-light bg-light">
+
+            <div class="navbar-brand">
+                <a href="/tube/">
+                    <h2>Hypertube</h2>
+                </a>
+
+            </div>
+            <span class="navbar-text">
+            {% if user.is_authenticated %}
+                    Hello, {{ user }} - <a href="{% url 'logout' %}">logout</a>
+                {% else %}
+                    <a href="{% url 'login' %}">Login</a>
+                    <a href="{% url 'signup' %}">Sign Up</a>
+                {% endif %}
+            </span>
+
+        <form class="form-inline my-2 my-lg-0" action="{% url 'index' %}">
+
+            <input class="form-control mr-sm-2" type="search" aria-label="Search" name="q">
+            <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+
+        </form>
+
+</nav>
+    <div class="container-md my-4">
+        <video width="640" height="400" controls>
+            <source src="/tube/file/{{ video.file.name }}" type="video/mp4">
+        </video>
+
+         <p>{{ video.title }}</p>
     {% for tag in tags %}
         <a target="_blank" href="/tube/?tag={{ tag.name }}">#{{ tag.name }}</a>
     {% endfor %}
 
+    </div>
+
+
+
 <!-- Bootstrap Bundle with Popper -->
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-p34f1UUtsS3wqzfto5wAAmdvj+osOnFyQFpp4Ua3gs/ZVWx6oOypYoCJhGGScy+8" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-p34f1UUtsS3wqzfto5wAAmdvj+osOnFyQFpp4Ua3gs/ZVWx6oOypYoCJhGGScy+8" crossorigin="anonymous"></script>
 </body>
 </html>

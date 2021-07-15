@@ -12,7 +12,7 @@
 <body>
     <a href="/tube/"><h2>Hypertube</h2></a>
     {% if user.is_authenticated %}
-        <p>Hello, {{ user }} - <a href="/logout/">logout</a></p>
+        <p>Hello, {{ user }} - <a href="{% url 'logout' %}">logout</a></p>
 
         <form enctype="multipart/form-data" method="post" action="">{% csrf_token %}
             <table>{{ form.as_table}}</table>
@@ -23,8 +23,8 @@
             You are not logged in. Please log in or
             sign up if you have no account.
         </p>
-        <a href="/login/">Login</a>
-        <a href="/signup/">Sign Up</a>
+        <a href="{% url 'login' %}">Login</a>
+        <a href="{% url 'signup' %}">Sign Up</a>
     {% endif %}
 
 <!-- Bootstrap Bundle with Popper -->
