@@ -16,12 +16,12 @@ class Index(View):
         tag = request.GET.get('tag')
 
         if query:
-            videos = Video.objects.filter(title__icontains=query)
+            videos = Video.objects.filter(title__icontains=query)[:15]
         elif tag:
-            video_tags = VideoTag.objects.filter(tag__name__iexact=tag)
+            video_tags = VideoTag.objects.filter(tag__name__iexact=tag)[:15]
             videos = set([tag.video for tag in video_tags])
         else:
-            videos = Video.objects.all()
+            videos = Video.objects.all()[:15]
 
         context = {
             'tag': tag,

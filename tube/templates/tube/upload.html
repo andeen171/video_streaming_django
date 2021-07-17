@@ -1,33 +1,100 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-     <!-- Required meta tags -->
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-    <!-- Bootstrap CSS -->
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-wEmeIV1mKuiNpC+IOBjI7aAzPcEZeedi5yW5f2yOq55WWLwNGmvvx4Um1vskeMj0" crossorigin="anonymous">
-    <meta charset="UTF-8">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+    <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <title>Upload</title>
+    <style>
+        *{
+            text-decoration: none !important;
+        }
+        html, body{
+            height: 100%;
+        }
+        .text-center{
+            display: -ms-flexbox;
+            display: -webkit-box;
+            display: flex;
+            -ms-flex-align: center;
+            -ms-flex-pack: center;
+            -webkit-box-align: center;
+            align-items: center;
+            -webkit-box-pack: center;
+            justify-content: center;
+            padding-top: 40px;
+            padding-bottom: 40px;
+            height: 80%;
+        }
+        .form-signup{
+            max-width: 330px;
+        }
+        .form-text{
+            text-align: left !important;
+            padding: 10px 20px 10px 20px;
+        }
+    </style>
 </head>
 <body>
-    <a href="/tube/"><h2>Hypertube</h2></a>
+
+    <nav class="navbar ">
+        <div class="navbar-brand">
+            <a href="/tube/">
+                <h2>Hypertube</h2>
+            </a>
+        </div>
+    </nav>
     {% if user.is_authenticated %}
-        <p>Hello, {{ user }} - <a href="{% url 'logout' %}">logout</a></p>
+        <div class="text-center">
+            <form enctype="multipart/form-data" method="post" action="" class="form-signup">{% csrf_token %}
+                <h1 class="h3 mb-3 font-weight-normal">Upload</h1>
+        <!--
+            File form
+        -->
+                {{ form.video.errors }}
+                <label for="{{ form.video.id_for_label }}" class="sr-only"></label>
+                <input class="form-control" id="{{ form.video.id_for_label }}"
+                    maxlength="30" name="{{ form.video.html_name }}" type="file" />
+                <small class="form-text text-muted">{{ form.video.help_text|safe }}</small>
 
-        <form enctype="multipart/form-data" method="post" action="">{% csrf_token %}
-            <table>{{ form.as_table}}</table>
-            <button type="submit">upload</button>
-        </form>
+        <!--
+            Title form
+        -->
+                {{ form.title.errors }}
+                <label for="{{ form.title.id_for_label }}" class="sr-only"></label>
+                <input class="form-control" id="{{ form.title.id_for_label }}"
+                    maxlength="30" name="{{ form.title.html_name }}"
+                       placeholder="Title" type="text" />
+                <small class="form-text text-muted">{{ form.title.help_text|safe }}</small>
+
+        <!--
+            Tags form
+        -->
+                {{ form.tags.errors }}
+                <label for="{{ form.tags.id_for_label }}" class="sr-only"></label>
+                <input class="form-control" id="{{ form.tags.id_for_label }}"
+                    maxlength="30" name="{{ form.tags.html_name }}"
+                       placeholder="Tags" type="text" />
+                <small class="form-text text-muted">{{ form.tags.help_text|safe }}</small>
+
+            <button type="submit" class="btn btn-lg btn-primary btn-block">Upload</button>
+            </form>
     {% else %}
-        <p>
-            You are not logged in. Please log in or
-            sign up if you have no account.
-        </p>
-        <a href="{% url 'login' %}">Login</a>
-        <a href="{% url 'signup' %}">Sign Up</a>
+        <div class="form-text">
+            <p>
+                You are not logged in. Please log in or
+                sign up if you don't have a account yet.
+            </p>
+            <br>
+            <a href="{% url 'login' %}">Login</a>
+                <span> or </span>
+            <a href="{% url 'signup' %}">Sign Up</a>
+        </div>
     {% endif %}
+        </div>
 
-<!-- Bootstrap Bundle with Popper -->
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-p34f1UUtsS3wqzfto5wAAmdvj+osOnFyQFpp4Ua3gs/ZVWx6oOypYoCJhGGScy+8" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-p34f1UUtsS3wqzfto5wAAmdvj+osOnFyQFpp4Ua3gs/ZVWx6oOypYoCJhGGScy+8" crossorigin="anonymous"></script>
 </body>
 </html>

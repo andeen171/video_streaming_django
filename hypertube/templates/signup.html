@@ -49,16 +49,39 @@
     <div class="text-center">
         <form method="post" class="form-signup" action="{% url 'signup' %}">{% csrf_token %}
             <h1 class="h3 mb-3 font-weight-normal">Sign-Up Now!</h1>
-            {% for field in form %}
-                {{ field.errors }}
-                <label for="{{ field.id_for_label }}" class="sr-only"></label>
-                <input class="form-control" id="{{ field.id_for_label }}"
-                       maxlength="30" name="{{ field.html_name }}"
-                       placeholder="{{ field.name }}" type="{{ field.type }}" />
-                {% if field.help_text %}
-                    <small class="form-text text-muted">{{ field.help_text|safe }}</small>
-                {% endif %}
-            {% endfor %}
+        <!--
+            Username form
+        -->
+                {{ form.username.errors }}
+                <label for="{{ form.username.id_for_label }}" class="sr-only"></label>
+                <input class="form-control" id="{{ form.username.id_for_label }}"
+                       maxlength="30" name="{{ form.username.html_name }}"
+                       placeholder="Username" type="text" />
+                <small class="form-text text-muted">{{ form.username.help_text|safe }}</small>
+
+
+        <!--
+            Password1 form
+        -->
+                {{ form.password1.errors }}
+                <label for="{{ form.password1.id_for_label }}" class="sr-only"></label>
+                <input class="form-control" id="{{ form.password1.id_for_label }}"
+                       maxlength="30" name="{{ form.password1.html_name }}"
+                       placeholder="Password" type="password" />
+                <small class="form-text text-muted">{{ form.password1.help_text|safe }}</small>
+
+
+        <!--
+            Password2 form
+        -->
+                {{ form.password2.errors }}
+                <label for="{{ form.password2.id_for_label }}" class="sr-only"></label>
+                <input class="form-control" id="{{ form.password2.id_for_label }}"
+                       maxlength="30" name="{{ form.password2.html_name }}"
+                       placeholder="Password again" type="password" />
+                <small class="form-text text-muted">{{ form.password2.help_text|safe }}</small>
+
+
             <button type="submit" class="btn btn-lg btn-primary btn-block">SignUp</button>
         </form>
     </div>
