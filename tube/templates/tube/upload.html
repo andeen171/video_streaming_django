@@ -56,7 +56,7 @@
                 {{ form.video.errors }}
                 <label for="{{ form.video.id_for_label }}" class="sr-only"></label>
                 <input class="form-control" id="{{ form.video.id_for_label }}"
-                    maxlength="30" name="{{ form.video.html_name }}" type="file" />
+                    maxlength="30" name="{{ form.video.html_name }}" type="file" accept="video/mp4,video/x-m4v,video/*" />
                 <small class="form-text text-muted">{{ form.video.help_text|safe }}</small>
 
         <!--

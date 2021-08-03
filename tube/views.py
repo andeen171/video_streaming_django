@@ -1,34 +1,40 @@
 from django.shortcuts import render, redirect, HttpResponse
+from django.core.exceptions import ValidationError
+from django.views.generic.list import ListView
+from django.db.models import Q
 from django.views import View
 from .models import Video, VideoTag, Tag
-from .forms import UploadForm
+from .forms import UploadForm, SearchForm
 from hypertube import settings
 import ffmpeg
 import sys
 
 
 # Create your views here.
-class Index(View):
+class Index(ListView):
+    template_name = 'tube/index.html'
+    form_class = SearchForm
+    paginate_by = 2
+    context_object_name = 'data'
+    model = Video
 
-    def get(self, request):
-
-        query = request.GET.get('q')
-        tag = request.GET.get('tag')
-
+    def get_queryset(self):
+        query = self.request.GET.get('q')
+        tag = self.request.GET.get('tag')
         if query:
-            videos = Video.objects.filter(title__icontains=query)[:15]
+            return Video.objects.filter(Q(title__icontains=query))
         elif tag:
-            video_tags = VideoTag.objects.filter(tag__name__iexact=tag)[:15]
-            videos = set([tag.video for tag in video_tags])
+            video_tags = VideoTag.objects.filter(Q(tag__name__iexact=tag))
+            return list([tag.video for tag in video_tags])
         else:
-            videos = Video.objects.all()[:15]
+            return self.model.objects.all()
 
-        context = {
-            'tag': tag,
-            'videos': videos,
-            'user': request.user
-        }
-        return render(request, 'tube/index.html', context)
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super(Index, self).get_context_data(**kwargs)
+        context['query'] = self.request.GET.get('q', None)
+        context['tag'] = self.request.GET.get('tag', None)
+        context['videoqnt'] = Video.objects.all().count()
+        return context
 
 
 class Upload(View):
@@ -41,26 +47,31 @@ class Upload(View):
     def post(self, request, *args, **kwargs):
         form = UploadForm(request.POST, request.FILES)
         if form.is_valid():
-            title = request.POST['title']
-            tags_arr = request.POST['tags'].split()
-            tags = []
-            for s in tags_arr:
-                t = Tag()
-                t.name = s
-                t.save()
-                tags.append(t)
-            video_file = request.FILES['video']
-            video_model = Video()
-            video_model.title = title
-            video_model.file = video_file
-            video_model.author = request.user
-            video_model.save()
-            for t in tags:
-                video_tag = VideoTag()
-                video_tag.tag = t
-                video_tag.video = video_model
-                video_tag.save()
-            generate_thumbnail(video_file, video_model)
+            try:
+                video_file = request.FILES['video']
+            except ValidationError:
+                return redirect('/tube/upload')
+            else:
+                title = request.POST['title']
+                tags_arr = request.POST['tags'].split()
+                tags = []
+                for s in tags_arr:
+                    t = Tag()
+                    t.name = s
+                    t.save()
+                    tags.append(t)
+
+                video_model = Video()
+                video_model.title = title
+                video_model.file = video_file
+                video_model.author = request.user
+                video_model.save()
+                for t in tags:
+                    video_tag = VideoTag()
+                    video_tag.tag = t
+                    video_tag.video = video_model
+                    video_tag.save()
+                generate_thumbnail(video_file, video_model)
         return redirect('/tube/')
 
 
@@ -92,11 +103,11 @@ class ThumbViewer(View):
 def generate_thumbnail(in_filename, video_model):
     file_name = Video.objects.get(id=video_model.id).file.name
     print(file_name)
-    path = settings.MEDIA_ROOT + 'thumb' + file_name.replace('.mp4', '').replace(' ', '_') + '.png'
+    path = settings.MEDIA_ROOT + 'thumb' + file_name.replace('.mp4', '.png').replace(' ', '_')
     print(path)
     try:
         (
-            ffmpeg.input(in_filename.temporary_file_path(), ss='00:00:05')
+            ffmpeg.input(settings.MEDIA_ROOT + in_filename.name, ss='00:00:05')
                   .output(path, vframes=1)
                   .overwrite_output()
                   .run(capture_stdout=True, capture_stderr=True)

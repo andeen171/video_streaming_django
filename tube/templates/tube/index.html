@@ -1,3 +1,4 @@
+{% load static %}
 <!doctype html>
 <html lang="en">
     <head>
@@ -53,7 +54,7 @@
                 {% endif %}
             </span>
             <span class="navbar-text">
-                {{ videos|length }} videos - <a href="{% url 'upload' %}">Upload video</a>
+                {{ videoqnt }} videos - <a href="{% url 'upload' %}">Upload video</a>
             </span>
 
             <form class="form-inline my-2 my-lg-0" action="{% url 'index' %}">
@@ -68,9 +69,9 @@
 
         <div class="mt-4">
             <div class="container">
-                <div class="row">
-                    {% for video in videos %}
-                    <div class="col-xl-4 col-lg-4 col-md-6 col-sm-12 col-12">
+                <div class="row infinite-container">
+                    {% for video in page_obj %}
+                    <div class="col-xl-4 col-lg-4 col-md-6 col-sm-12 col-12 infinite-item">
                         <div class="video-testimonial-block">
                             <div class="video-thumbnail">
                                 <a href="/tube/watch/{{ video.id }}/">
@@ -86,10 +87,27 @@
                     {% endfor %}
                 </div>
             </div>
+
+            <div class="row">
+                <div class="col-12">
+                    {% if page_obj.has_next %}
+                    <a class="infinite-more-link" href="?{% if query %}q={{ query }}{% elif tag %}tag={{ tag }}{% endif %}&page={{ page_obj.next_page_number }}">next</a>
+                    {% endif %}
+                </div>
+            </div>
         </div>
 
-         <script src="https://code.jquery.com/jquery-1.12.0.min.js"></script>
-         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+        <script src="https://code.jquery.com/jquery-1.12.0.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-p34f1UUtsS3wqzfto5wAAmdvj+osOnFyQFpp4Ua3gs/ZVWx6oOypYoCJhGGScy+8" crossorigin="anonymous"></script>
-  </body>
+
+        <script src="{% static "js/jquery.waypoints.min.js" %}"></script>
+    <script src="{% static "js/infinite.min.js" %}"></script>
+    <script>
+        const infinite = new Waypoint.Infinite({
+            element: $('.infinite-container')[0],
+            offset: 'bottom-in-view',
+        });
+    </script>
+    </body>
 </html>
