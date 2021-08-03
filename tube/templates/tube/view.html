@@ -47,9 +47,25 @@
             <source src="/tube/file/{{ video.file.name }}" type="video/mp4">
         </video>
 
-         <p>{{ video.title }}</p>
+        <p>{{ video.title }}</p>
+        <p>{{ video.views }}</p>
+        <p>{{ video.description }}</p>
     {% for tag in tags %}
         <a target="_blank" href="/tube/?tag={{ tag.name }}">#{{ tag.name }}</a>
+    {% endfor %}
+    <br>
+    {% if user.is_authenticated %}
+        {{ form.comment.errors }}
+        <form action="" method="post" class="form-signup"> {% csrf_token %}
+            <label for="{{ form.comment.id_for_label }}">Comment</label>
+            <input name="{{ form.comment.html_name }}" id="{{ form.comment.id_for_label }}" type="text" placeholder="Add a comment">
+        <button type="submit" class="btn btn-lg btn-primary btn-block">Submit</button>
+        </form>
+    {% endif %}
+
+    {% for comment in comments %}
+        <p>{{ comment.text }}</p>
+        <small>{{ comment.author }}</small>
     {% endfor %}
 
     </div>

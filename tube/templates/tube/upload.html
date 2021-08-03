@@ -79,6 +79,16 @@
                        placeholder="Tags" type="text" />
                 <small class="form-text text-muted">{{ form.tags.help_text|safe }}</small>
 
+         <!--
+            Description form
+        -->
+                {{ form.description.errors }}
+                <label for="{{ form.description.id_for_label }}" class="sr-only"></label>
+                <input class="form-control" id="{{ form.description.id_for_label }}"
+                    maxlength="30" name="{{ form.description.html_name }}"
+                       placeholder="Description" type="text" />
+                <small class="form-text text-muted">{{ form.description.help_text|safe }}</small>
+
             <button type="submit" class="btn btn-lg btn-primary btn-block">Upload</button>
             </form>
     {% else %}

@@ -1,10 +1,11 @@
+# from django.contrib.postgres.search import SearchVector, SearchRank, SearchQuery
 from django.shortcuts import render, redirect, HttpResponse
 from django.core.exceptions import ValidationError
 from django.views.generic.list import ListView
 from django.db.models import Q
 from django.views import View
-from .models import Video, VideoTag, Tag
-from .forms import UploadForm, SearchForm
+from .models import Video, VideoTag, Tag, Comment, VideoComment
+from .forms import UploadForm, SearchForm, CommentForm
 from hypertube import settings
 import ffmpeg
 import sys
@@ -22,6 +23,7 @@ class Index(ListView):
         query = self.request.GET.get('q')
         tag = self.request.GET.get('tag')
         if query:
+            # annotate(rank=SearchRank(SearchVector('views'), SearchQuery(query))).order_by('-rank')
             return Video.objects.filter(Q(title__icontains=query))
         elif tag:
             video_tags = VideoTag.objects.filter(Q(tag__name__iexact=tag))
@@ -53,6 +55,7 @@ class Upload(View):
                 return redirect('/tube/upload')
             else:
                 title = request.POST['title']
+                description = request.POST['description']
                 tags_arr = request.POST['tags'].split()
                 tags = []
                 for s in tags_arr:
@@ -64,6 +67,7 @@ class Upload(View):
                 video_model = Video()
                 video_model.title = title
                 video_model.file = video_file
+                video_model.description = description
                 video_model.author = request.user
                 video_model.save()
                 for t in tags:
@@ -79,10 +83,30 @@ class Viewer(View):
 
     def get(self, request, video_id):
         video = Video.objects.get(id=video_id)
+        video.views += 1
+        video.save()
         video_tags = VideoTag.objects.filter(video=video)
         tags = set([video.tag for video in video_tags])
-        context = {'video': video, 'tags': tags}
+        video_comment = VideoComment.objects.filter(video=video)
+        comments = set([video.comment for video in video_comment])
+        form = CommentForm
+        context = {'video': video, 'tags': tags, 'form': form, 'comments': comments}
         return render(request, 'tube/view.html', context=context)
+
+    def post(self, request, video_id):
+        form = CommentForm(request.POST)
+        if form.is_valid():
+            content = request.POST['comment']
+            comment = Comment()
+            comment.text = content
+            comment.author = request.user
+            comment.save()
+            video = Video.objects.get(id=video_id)
+            video_comment = VideoComment()
+            video_comment.video = video
+            video_comment.comment = comment
+            video_comment.save()
+        return redirect(f'/tube/watch/{video_id}')
 
 
 class FileViewer(View):
