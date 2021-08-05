@@ -1,10 +1,14 @@
-# from django.contrib.postgres.search import SearchVector, SearchRank, SearchQuery
-from django.shortcuts import render, redirect, HttpResponse
+import mimetypes
+import re
+import os
+from wsgiref.util import FileWrapper
+from django.http import StreamingHttpResponse
 from django.core.exceptions import ValidationError
 from django.views.generic.list import ListView
 from django.db.models import Q
 from django.views import View
-from .models import Video, VideoTag, Tag, Comment, VideoComment
+from django.shortcuts import render, redirect, HttpResponse
+from .models import Video, VideoTag, Tag, Comment
 from .forms import UploadForm, SearchForm, CommentForm
 from hypertube import settings
 import ffmpeg
@@ -15,7 +19,7 @@ import sys
 class Index(ListView):
     template_name = 'tube/index.html'
     form_class = SearchForm
-    paginate_by = 2
+    paginate_by = 3
     context_object_name = 'data'
     model = Video
 
@@ -87,8 +91,7 @@ class Viewer(View):
         video.save()
         video_tags = VideoTag.objects.filter(video=video)
         tags = set([video.tag for video in video_tags])
-        video_comment = VideoComment.objects.filter(video=video)
-        comments = set([video.comment for video in video_comment])
+        comments = Comment.objects.filter(video=video)
         form = CommentForm
         context = {'video': video, 'tags': tags, 'form': form, 'comments': comments}
         return render(request, 'tube/view.html', context=context)
@@ -100,20 +103,55 @@ class Viewer(View):
             comment = Comment()
             comment.text = content
             comment.author = request.user
-            comment.save()
             video = Video.objects.get(id=video_id)
-            video_comment = VideoComment()
-            video_comment.video = video
-            video_comment.comment = comment
-            video_comment.save()
+            comment.video = video
+            comment.save()
         return redirect(f'/tube/watch/{video_id}')
 
 
 class FileViewer(View):
 
+    def file_iterator(self, file_name, chunk_size=8192, offset=0, length=None):
+        with open(settings.MEDIA_ROOT + file_name, "rb") as f:
+            f.seek(offset, os.SEEK_SET)
+            remaining = length
+            while True:
+                bytes_length = chunk_size if remaining is None else min(remaining, chunk_size)
+                data = f.read(bytes_length)
+                if not data:
+                    break
+                if remaining:
+                    remaining -= len(data)
+                yield data
+
     def get(self, request, file_name):
-        with open(settings.MEDIA_ROOT + file_name, 'rb') as vid:
-            return HttpResponse(content=vid, content_type='video/mp4')
+        """ Forma que eu achei para streamar o video por httpresponse,
+         enquanto eu não implemento um proxy nginx """
+        path = file_name
+        range_header = request.META.get('HTTP_RANGE', '').strip()
+        range_re = re.compile(r'bytes\s*=\s*(\d+)\s*-\s*(\d*)', re.I)
+        range_match = range_re.match(range_header)
+        size = os.path.getsize(settings.MEDIA_ROOT + path)
+        content_type, encoding = mimetypes.guess_type(path)
+        content_type = content_type or 'application/octet-stream'
+        if range_match:
+            first_byte, last_byte = range_match.groups()
+            first_byte = int(first_byte) if first_byte else 0
+            last_byte = first_byte + 1024 * 1024 * 8  # 8M per piece, the maximum volume of the response body
+            if last_byte >= size:
+                last_byte = size - 1
+            length = last_byte - first_byte + 1
+            resp = StreamingHttpResponse(self.file_iterator(path, offset=first_byte, length=length), status=206,
+                                         content_type=content_type)
+            resp['Content-Length'] = str(length)
+            resp['Content-Range'] = 'bytes %s-%s/%s' % (first_byte, last_byte, size)
+
+        else:
+            # When the video stream is not obtained, the entire file is returned in the generator mode to save memory.
+            resp = StreamingHttpResponse(FileWrapper(open(path, 'rb')), content_type=content_type)
+            resp['Content-Length'] = str(size)
+        resp['Accept-Ranges'] = 'bytes'
+        return resp
 
 
 class ThumbViewer(View):
