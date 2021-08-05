@@ -27,8 +27,8 @@
             max-height: 197px !important;
         }
         .pfp{
-            max-width: 25px;
-            border-radius: 25px;
+            max-width: 75px;
+            border-radius: 75px;
         }
 
     </style>
@@ -52,14 +52,6 @@
                 {% endif %}
             </span>
 
-            <span class="navbar-text">
-                {% if tag %}
-                    <a href="/tube/?tag={{ tag }}">#{{ tag }}</a>
-                {% endif %}
-            </span>
-            <span class="navbar-text">
-                {{ videoqnt }} videos - <a href="{% url 'upload' %}">Upload video</a>
-            </span>
 
             <form class="form-inline my-2 my-lg-0" action="{% url 'index' %}">
 
@@ -69,6 +61,20 @@
             </form>
 
         </nav>
+        <div class="mt-2">
+            <div class="container">
+                <img src="/user/profile/{{ profile.pfp }}/" alt="" class="pfp" >
+                {% if user.profile == profile %}
+                    <form enctype="multipart/form-data" method="post" action="" class="form-signup">{% csrf_token %}
+                        <input id="{{ form.image.id_for_label }}"
+                               maxlength="30" name="{{ form.image.html_name }}"
+                               type="file" accept="image/jpg, image/png, image/*"/>
+                        <button type="submit" class="btn btn-lg btn-primary">Upload</button>
+                    </form>
+                {% endif %}
+                <p>{{ name }}</p>
+            </div>
+        </div>
 
 
         <div class="mt-4">
@@ -86,10 +92,6 @@
                         <div class="video-testimonial-content">
                             <h4 class="mb10">{{ video.title }}</h4>
                             <small class="form-text text-muted">{{ video.views }}</small>
-                            <p>
-                                <img src="/user/profile/{{ video.author.profile.pfp }}" alt="" class="pfp">
-                                <a href="/user/profile/{{ video.author.id }}">{{ video.author }}</a>
-                            </p>
                         </div>
                     </div>
                     {% endfor %}
@@ -99,7 +101,7 @@
             <div class="row">
                 <div class="col-12">
                     {% if page_obj.has_next %}
-                    <a class="infinite-more-link" href="?{% if query %}q={{ query }}{% elif tag %}tag={{ tag }}{% endif %}&page={{ page_obj.next_page_number }}">next</a>
+                    <a class="infinite-more-link" href="?page={{ page_obj.next_page_number }}&">next</a>
                     {% endif %}
                 </div>
             </div>

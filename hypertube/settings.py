@@ -41,6 +41,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'hypertube',
     'tube',
+    'user',
+    'imagekit'
 ]
 
 MIDDLEWARE = [

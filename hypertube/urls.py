@@ -21,6 +21,7 @@ from .views import MyLoginView, MySignupView
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('tube/', include('tube.urls')),
+    path('user/', include('user.urls')),
     path('login/', MyLoginView.as_view(), name='login'),
     path('logout/', LogoutView.as_view(), name='logout'),
     path('signup/', MySignupView.as_view(), name='signup'),

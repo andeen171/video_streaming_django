@@ -26,6 +26,7 @@ class Comment(models.Model):
     text = models.CharField(max_length=255)
     post_date = models.DateTimeField(default=now)
     author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, default=1)
+    video = models.ForeignKey(Video, on_delete=models.CASCADE)
 
     class meta:
         ordering = ['post_date']
@@ -34,8 +35,3 @@ class Comment(models.Model):
 class VideoTag(models.Model):
     video = models.ForeignKey(Video, on_delete=models.CASCADE)
     tag = models.ForeignKey(Tag, on_delete=models.CASCADE)
-
-
-class VideoComment(models.Model):
-    video = models.ForeignKey(Video, on_delete=models.CASCADE)
-    comment = models.ForeignKey(Comment, on_delete=models.CASCADE)
