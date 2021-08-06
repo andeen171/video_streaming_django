@@ -4,9 +4,10 @@
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
-        <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
-        <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+        <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
         <title>HyperTube - Main</title>
         <style>
         *{
@@ -31,17 +32,15 @@
             border-radius: 75px;
         }
 
-    </style>
+        </style>
     </head>
     <body>
 
         <nav class="navbar navbar-light bg-light">
-
             <div class="navbar-brand">
                 <a href="/tube/">
                     <h2>Hypertube</h2>
                 </a>
-
             </div>
             <span class="navbar-text">
                 {% if user.is_authenticated %}
@@ -51,53 +50,108 @@
                     <a href="{% url 'signup' %}">Sign Up</a>
                 {% endif %}
             </span>
-
-
             <form class="form-inline my-2 my-lg-0" action="{% url 'index' %}">
-
                 <input class="form-control mr-sm-2" type="search" aria-label="Search" name="q">
                 <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
-
             </form>
-
         </nav>
         <div class="mt-2">
             <div class="container">
                 <img src="/user/profile/{{ profile.pfp }}/" alt="" class="pfp" >
                 {% if user.profile == profile %}
-                    <form enctype="multipart/form-data" method="post" action="" class="form-signup">{% csrf_token %}
-                        <input id="{{ form.image.id_for_label }}"
-                               maxlength="30" name="{{ form.image.html_name }}"
-                               type="file" accept="image/jpg, image/png, image/*"/>
-                        <button type="submit" class="btn btn-lg btn-primary">Upload</button>
-                    </form>
+                    <div id="photomodal" class="modal fade" role="dialog">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h4 class="modal-title">Upload Photo</h4>
+                                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                </div>
+                                <form enctype="multipart/form-data" method="post" action="" class="form-signup">{% csrf_token %}
+                                    <div class="modal-body">
+                                        <input id="{{ photoform.image.id_for_label }}"
+                                           maxlength="255" name="{{ photoform.image.html_name }}"
+                                           type="file" accept="image/jpg, image/png, image/*" required/>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="submit" class="btn btn-primary">Upload</button>
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
                 {% endif %}
-                <p>{{ name }}</p>
+                <h2>{{ name }}</h2>
+                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#photomodal">Upload photo</button>
             </div>
         </div>
-
-
         <div class="mt-4">
             <div class="container">
                 <div class="row infinite-container">
                     {% for video in page_obj %}
-                    <div class="col-xl-4 col-lg-4 col-md-6 col-sm-12 col-12 infinite-item">
-                        <div class="video-testimonial-block">
-                            <div class="video-thumbnail">
-                                <a href="/tube/watch/{{ video.id }}/">
-                                    <img src="/tube/thumb/thumb{{ video.file.name }}/" alt="" class="img-fluid" >
-                                </a>
-                            </div>
-                        </div>
+                        <div class="col-xl-4 col-lg-4 col-md-6 col-sm-12 col-12 infinite-item">
+                            <a href="/tube/watch/{{ video.id }}/">
+                            <div class="video-testimonial-block">
+                                <div class="video-thumbnail">
+                                        <img src="/tube/thumb/thumb{{ video.file.name }}/" alt="" class="img-fluid" >
+                                    </div>
+                                </div>
+                            </a>
                         <div class="video-testimonial-content">
                             <h4 class="mb10">{{ video.title }}</h4>
                             <small class="form-text text-muted">{{ video.views }}</small>
                         </div>
-                    </div>
+                        {% if user.profile == profile %}
+                            <button type="button" class="btn btn-info" data-toggle="modal" data-target="#editModal{{ video.id }}">Edit</button>
+                            <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#deleteModal{{ video.id }}">Delete</button>
+                        </div>   <!-- Modal delete-->
+                            <div id="deleteModal{{ video.id }}" class="modal fade" role="dialog">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h4 class="modal-title">Delete</h4>
+                                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <p>Are you sure?</p>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <form action="/tube/delete/{{ video.id }}/" method="post">{% csrf_token %}
+                                                <input type="submit" name="delete" value="Delete" class="btn btn-danger">
+                                            </form>
+                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div> <!-- Modal edit-->
+                            <div id="editModal{{ video.id }}" class="modal fade" role="dialog">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h4 class="modal-title">Edit</h4>
+                                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                        </div>
+                                        <form action="/tube/edit/{{ video.id }}/" method="post">{% csrf_token %}
+                                            <div class="modal-body">
+                                                <input id="{{ editform.title.id_for_label }}"
+                                                   maxlength="255" name="{{ editform.title.html_name }}"
+                                                   type="text" placeholder="Title" value="{{ video.title }}" required/>
+                                                <input id="{{ editform.description.id_for_label }}"
+                                                   maxlength="1024" name="{{ editform.description.html_name }}"
+                                                   type="text" placeholder="Description" value="{{ video.description }}" required/>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <input type="submit" name="edit" value="Update" class="btn btn-info">
+                                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                            </div>
+                                         </form>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endif %}
                     {% endfor %}
                 </div>
             </div>
-
             <div class="row">
                 <div class="col-12">
                     {% if page_obj.has_next %}
@@ -107,17 +161,13 @@
             </div>
         </div>
 
-        <script src="https://code.jquery.com/jquery-1.12.0.min.js"></script>
-        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-p34f1UUtsS3wqzfto5wAAmdvj+osOnFyQFpp4Ua3gs/ZVWx6oOypYoCJhGGScy+8" crossorigin="anonymous"></script>
-
         <script src="{% static "js/jquery.waypoints.min.js" %}"></script>
-    <script src="{% static "js/infinite.min.js" %}"></script>
-    <script>
-        const infinite = new Waypoint.Infinite({
-            element: $('.infinite-container')[0],
-            offset: 'bottom-in-view',
-        });
-    </script>
+        <script src="{% static "js/infinite.min.js" %}"></script>
+        <script>
+            const infinite = new Waypoint.Infinite({
+                element: $('.infinite-container')[0],
+                offset: 'bottom-in-view',
+            });
+        </script>
     </body>
 </html>
