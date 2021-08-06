@@ -5,7 +5,7 @@ from django.views import View
 from django.db.models import Q
 from hypertube import settings
 from django.shortcuts import HttpResponse, redirect
-from .forms import UploadPhotoForm
+from .forms import UploadPhotoForm, EditVideoInfoForm
 
 
 class ProfileView(ListView):
@@ -24,7 +24,8 @@ class ProfileView(ListView):
         user_id = self.kwargs['userid']
         context = super(ProfileView, self).get_context_data(**kwargs)
         user = User.objects.get(id=user_id)
-        context['form'] = UploadPhotoForm
+        context['photoform'] = UploadPhotoForm
+        context['editform'] = EditVideoInfoForm
         context['name'] = user.username
         context['profile'] = user.profile
         return context

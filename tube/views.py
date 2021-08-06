@@ -1,6 +1,3 @@
-import mimetypes
-import re
-import os
 from wsgiref.util import FileWrapper
 from django.http import StreamingHttpResponse
 from django.core.exceptions import ValidationError
@@ -11,11 +8,13 @@ from django.shortcuts import render, redirect, HttpResponse
 from .models import Video, VideoTag, Tag, Comment
 from .forms import UploadForm, SearchForm, CommentForm
 from hypertube import settings
+import mimetypes
+import re
+import os
 import ffmpeg
 import sys
 
 
-# Create your views here.
 class Index(ListView):
     template_name = 'tube/index.html'
     form_class = SearchForm
@@ -174,6 +173,37 @@ def generate_thumbnail(in_filename, video_model):
                   .overwrite_output()
                   .run(capture_stdout=True, capture_stderr=True)
         )
-    except ffmpeg.Error as e:
-        print(e.stderr.decode(), file=sys.stderr)
+    except ffmpeg.Error as error:
+        print(error.stderr.decode(), file=sys.stderr)
         sys.exit(1)
+
+
+class DeleteVideoView(View):
+
+    def post(self, request, video_id):
+        video = Video.objects.get(id=video_id)
+        if video.author == request.user:
+            name = video.file.name
+            video.delete()
+            os.remove(settings.MEDIA_ROOT + name)
+            os.remove(settings.MEDIA_ROOT + 'thumb' + name.replace('.mp4', '.png'))
+            return redirect(f'/user/profile/{video.author.id}')
+        return redirect('')
+    
+    def get(self, request, video_id):
+        return redirect('')
+    
+    
+class EditVideoInfoView(View):
+    
+    def post(self, request, video_id):
+        video = Video.objects.get(id=video_id)
+        if video.author == request.user:
+            video.description = request.POST.get('description')
+            video.title = request.POST.get('title')
+            video.save()
+            return redirect(f'/user/profile/{video.author.id}')
+        return redirect('')
+
+    def get(self, request, video_id):
+        return redirect('')

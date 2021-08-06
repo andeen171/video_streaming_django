@@ -17,9 +17,11 @@ from django.contrib import admin
 from django.urls import path, include
 from django.contrib.auth.views import LogoutView
 from .views import MyLoginView, MySignupView
+from django.views.generic import RedirectView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('', RedirectView.as_view(url='tube/')),
     path('tube/', include('tube.urls')),
     path('user/', include('user.urls')),
     path('login/', MyLoginView.as_view(), name='login'),

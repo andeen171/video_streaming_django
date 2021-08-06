@@ -3,9 +3,10 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
-    <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
-    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
     <title>Upload</title>
     <style>
         *{
@@ -56,7 +57,7 @@
                 {{ form.video.errors }}
                 <label for="{{ form.video.id_for_label }}" class="sr-only"></label>
                 <input class="form-control" id="{{ form.video.id_for_label }}"
-                    maxlength="30" name="{{ form.video.html_name }}" type="file" accept="video/mp4,video/x-m4v,video/*" />
+                    maxlength="255" name="{{ form.video.html_name }}" type="file" accept="video/mp4,video/x-m4v,video/*" />
                 <small class="form-text text-muted">{{ form.video.help_text|safe }}</small>
 
         <!--
@@ -65,7 +66,7 @@
                 {{ form.title.errors }}
                 <label for="{{ form.title.id_for_label }}" class="sr-only"></label>
                 <input class="form-control" id="{{ form.title.id_for_label }}"
-                    maxlength="30" name="{{ form.title.html_name }}"
+                    maxlength="255" name="{{ form.title.html_name }}"
                        placeholder="Title" type="text" />
                 <small class="form-text text-muted">{{ form.title.help_text|safe }}</small>
 
@@ -75,7 +76,7 @@
                 {{ form.tags.errors }}
                 <label for="{{ form.tags.id_for_label }}" class="sr-only"></label>
                 <input class="form-control" id="{{ form.tags.id_for_label }}"
-                    maxlength="30" name="{{ form.tags.html_name }}"
+                    maxlength="255" name="{{ form.tags.html_name }}"
                        placeholder="Tags" type="text" />
                 <small class="form-text text-muted">{{ form.tags.help_text|safe }}</small>
 
@@ -85,7 +86,7 @@
                 {{ form.description.errors }}
                 <label for="{{ form.description.id_for_label }}" class="sr-only"></label>
                 <input class="form-control" id="{{ form.description.id_for_label }}"
-                    maxlength="30" name="{{ form.description.html_name }}"
+                    maxlength="1024" name="{{ form.description.html_name }}"
                        placeholder="Description" type="text" />
                 <small class="form-text text-muted">{{ form.description.help_text|safe }}</small>
 
