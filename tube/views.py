@@ -163,9 +163,7 @@ class ThumbViewer(View):
 
 def generate_thumbnail(in_filename, video_model):
     file_name = Video.objects.get(id=video_model.id).file.name
-    print(file_name)
     path = settings.MEDIA_ROOT + 'thumb' + file_name.replace('.mp4', '.png').replace(' ', '_')
-    print(path)
     try:
         (
             ffmpeg.input(settings.MEDIA_ROOT + in_filename.name, ss='00:00:05')
