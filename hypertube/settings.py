@@ -25,12 +25,10 @@ with open(os.path.join(BASE_DIR, 'hypertube/SECRET_KEY.txt')) as f:
     SECRET_KEY = f.read().strip()
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = ['localhost', 'andinocara.pythonnaywhere.com']
+ALLOWED_HOSTS = ['localhost', 'andinocara.pythonnaywhere.com', 'ec2-3-89-152-95.compute-1.amazonaws.com']
 
-
-# Application definition
 
 INSTALLED_APPS = [
     'django.contrib.admin',
