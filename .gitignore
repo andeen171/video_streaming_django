@@ -114,7 +114,6 @@ dmypy.json
 .pyre/
 
 .idea/
-media/
-tube/migrations/
 hypertube/SECRET_KEY.txt
+tube/migrations/
 user/migrations/
